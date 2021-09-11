@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 Reiichiro Nakano All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================
+-->
+<html lang="en">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-91864013-5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-91864013-5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-store">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@ReiiYoda" />
+    <meta name="twitter:title" content="Arbitrary Style Transfer with TF.js" />
+    <meta name="twitter:description" content="Paint yourself in the style of any painting, right in the browser." />
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/reiinakano/arbitrary-image-stylization-tfjs/master/readme_img/stylize.jpg" />
+
+    <title>Beyond Binary Attributes: Adversarially Discovering Interpretable Latent Space Directions of GANs for Anime Character Editing</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<style>
+.centered {
+  margin: auto;
+  display: block;
+}
+</style>
+
+<body>
+<input type="file" id="file-select" style="display: none" accept="image/x-png,image/gif,image/jpeg"/>
+<!-- As a heading -->
+<div class="jumbotron jumbotron-fluid py-4" style="text-align: center; background-color: #f5f5f5;">
+    <div class="container">
+      <h1><font color="#5A5AAD" face="museo-slab" size="“10px">Beyond Binary Attributes: Adversarially Discovering Interpretable Latent Space Directions of GANs for Anime Character Editing</font></h1>
+    </div>
+  </div>
+<div class="">
+<div id="mobile-warning" hidden class="alert alert-warning" role="alert">
+  This site may have problems functioning on mobile devices.
+  Don't worry, you can still read the description below!
+</div>
+<div class="tab-content" id="myTabContent">
+  <div class="container">
+    <div class="row my-4">
+      <div class="col mx-5 my-4">
+          <img id="content-img" class="centered" src="{{ imgSrc }}" height=512> </img>
+      </div>
+    </div>
+    <div class="row my-4">
+        <br>
+        <div class="col-md-3 offset-md-3">
+<!--            <form method="post" action="/encode" enctype="multipart/form-data">-->
+<!--                <button type="submit" id="upload" class="btn btn-light btn-block">-->
+<!--                  <i class="fa fa-file-image-o" data-toggle="tooltip" data-placement="top"-->
+<!--                   title="Upload Image" ></i>-->
+<!--                </button>-->
+<!--                <input type="file" name="photo">-->
+<!--            </form>-->
+            <button id="uploadBtn" class="btn btn-light btn-block"><i class="fa fa-file-image-o" data-toggle="tooltip" data-placement="top"
+                   title="Upload Image" ></i></button>
+            <form id="myForm" style="display: none;">
+                <input type="file" name="file" id="file" multiple="multiple"/>
+            </form>
+        </div>
+        <div class="col-md-3">
+          <button type="button" id="randomize" class="btn btn-light btn-block">
+            <i class="fas fa-random" data-toggle="tooltip" data-placement="top"
+            title="Randomize Image" onclick="location.href='/randomize'"></i>
+          </button>
+        </div>
+    </div>
+    <form id="form1" action="/pos" method="post">
+    <div class="row my-4">
+        <input type="text" name="fname" id="fname" value="1" style="display: none;"/>
+      <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Black Hair:</font></label>
+          <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button1" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='1';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[0] }}" class="custom-range centered" name="black-hair-step" id="step1">
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face ="museo-slab">Pink Hair:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button2" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='2';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[1] }}" class="custom-range centered" name="pink-hair-step" id="step2">
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Blonde Hair:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button3" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='3';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[2] }}" class="custom-range centered" name="blonde-hair-step" id="step3">
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Open Mouth:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button4" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='4';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[3] }}" class="custom-range centered" name="open-mouth-step" id="step4">
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Comic:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button5" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='5';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[4] }}" class="custom-range centered" name="comic-step" id="step5" >
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Realness:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button6" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='6';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[5] }}" class="custom-range centered" name="ffhq-step" id="step6" >
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Itomugi-kun:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button7" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='7';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[6] }}" class="custom-range centered" name="ikun-step" id="step7">
+          </div>
+      </div>
+
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Maruko:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button8" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='8';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[7] }}" class="custom-range centered" name="chibi-step" id="step8">
+          </div>
+      </div>
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Hair Length:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button9" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='9';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[8] }}" class="custom-range centered" name="hairlength-step" id="step9">
+          </div>
+      </div>
+        <div class="row my-4">
+        <div class="col-md-2 offset-md-1">
+          <label><font face="museo-slab">Blunt Bangs:</font></label>
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
+          title="This parameter affects the strength of the two styles relative to each other."></i>
+      </div>
+          <div class="col-md-1">
+            <button id="button0" class="btn btn-primary btn-block" style="background-color: #5A5AAD" onclick="document.getElementById('fname').value='0';document.getElementById('form1').submit();disableAllButtons()"><font face="museo-slab">Edit</font></button>
+          </div>
+          <div class="col-md-6">
+             <input type="range" min="0" max="100" value="{{ steps[9] }}" class="custom-range centered" name="bluntbangs-step" id="step0">
+          </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- JQuery -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+
+  $.ajax({
+     dataType:'json',
+     data:{},
+     beforeSend :function(xmlHttp){
+        xmlHttp.setRequestHeader("If-Modified-Since","0");
+        xmlHttp.setRequestHeader("Cache-Control","no-cache");
+     },
+
+     async:false
+  });
+</script>
+<script type="text/javascript">
+    var attr = document.getElementById('fname');
+    attr.value = "{{ attr }}";
+    for (i = 0; i <= 9; i++) {
+        range_idx = String(i);
+        var ran = document.getElementById("button"+range_idx);
+        if (range_idx == attr.value){
+           ran.style = "background-color: #66CCCC"
+           }
+        else{
+           ran.style = "background-color: #5A5AAD"
+           }
+    }
+    var uploadBtn = document.getElementById("uploadBtn"),
+        file = document.getElementById("file");
+    uploadBtn.addEventListener("click", function (e) {
+        if (file) {
+            file.click();
+        }
+        e.preventDefault();
+    }, false);
+
+    file.addEventListener("change", function(e) {
+        handlefiles(this.files);
+<!--        alert("Encoding...");-->
+<!--        setTimeout("alert(1)",5000);-->
+        location.href="/encode";
+        e.preventDefault();
+    }, false);
+
+    function handlefiles(){
+        var formData = new FormData($("#myForm")[0]);
+	$.ajax({
+	        url: "/encode",
+            type: "post",
+            data: formData,
+	        contentType:"application/x-www-form-urlencoded; charset=utf-8",
+	        async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                console.log(data.msg);
+                $("#submit").trigger("click");
+                if(data.state == "1"){
+                    console.log(data.msg);
+                    $("#submit").trigger("click");
+                }else if(data.state == "2"){
+		            console.log(data.msg)
+                }else if(data.state == "3"){
+                    console.log(data.msg)
+                }
+	    }
+	});
+    }
+
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
+</body>
+</html>
