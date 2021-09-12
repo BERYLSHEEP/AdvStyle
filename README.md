@@ -63,6 +63,35 @@ Results are saved to `result/{attribute}`
 
 The attribute names are the file names in the `boundaries`  directory.
 
+## Interactive Demo
+
+<img src="img/app.png">
+
+- Prerequisites: Flask
+
+  ```bash
+  pip install flask
+  pip install --upgrade flask_nav
+  pip install --upgrade flask_bootstrap
+  ```
+
+- Running
+
+  ```python
+  # only for stylegan_anime
+  # the input latent code is belong to latent space z [1, 512]
+  python app.py --latent_code noise/maruko/16.npy --composing_type z
+  # the input latent code is belong to latent space w+ [1, 16, 512]
+  python app.py --latent_code noise/38_w+.npy --composint_type w+
+  ```
+
+- Instructions
+  - Only one attribute can be edited at once time.
+  - Multi attributes edit examples:
+    - Click the corresponding ` Edit` Button for "Pink Hair", then move the corresponding toolbar to the desired step.
+    - Click the corresponding ` Edit` Button for "Open Mouth", then move the corresponding toolbar to the desired step.
+    - ....
+
 ## Related Project
 
 - The pretrained StyleGAN weights are from official [StyleGAN](https://github.com/NVlabs/stylegan) and [Gwern](https://www.gwern.net/Faces#anime-faces)
