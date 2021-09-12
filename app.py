@@ -53,7 +53,7 @@ parser.add_argument('-i', '--boundaries_dir',
                 default='./boundaries',
                 help='where the boundaries are located')
 parser.add_argument('-d', '--device', default=0)
-
+parser.add_argument('--latent_code', help='the input latent code path', default="noise/38_w+.npy")
 # Keep the following parameters by default
 parser.add_argument('--composing_type', default='w',
                     help='composing type, "mid" for composing at middle of GAN. choices: z, w, w+, mid')
@@ -87,8 +87,9 @@ for i in range(10):
     shifts_r_list.append(direction_dict["shift_range"][1])
 
 def edit(shifts, attr, composing_type="z"):
-    noise_torch = torch.from_numpy(np.load('noise/38_w+.npy')).cuda()
-    noise_torch = noise_torch.unsqueeze(0)
+    noise_torch = torch.from_numpy(np.load(args.latent_code)).cuda()
+    if len(noise_torch.shape) == 2 and composing_type == "w+":
+        noise_torch = noise_torch.unsqueeze(0)
     if composing_type == "w+":
         ws = noise_torch
     elif composing_type == "z":
@@ -106,7 +107,7 @@ def edit(shifts, attr, composing_type="z"):
 
 @app.route("/randomize")
 def randomize():
-    z = np.load('noise/maruko/16.npy')
+    z = np.load(args.latent_code)
     attr = 1
     steps = [0 for i in range(10)]
     edit(steps, attr, args.composing_type)
@@ -147,7 +148,7 @@ def rootpost():
 
 @app.route('/')
 def root():
-    z = np.load('noise/maruko/16.npy')
+    z = np.load(args.latent_code)
     attr = 1
     steps = [0 for i in range(10)]
     edit(steps, attr,args.composing_type)
